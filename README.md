@@ -1,141 +1,91 @@
-# Otomatisasi Klik Python
+# Auto Clicker dengan Pencarian Gambar dan Timer
 
-Skrip Python ini dirancang untuk melakukan serangkaian klik otomatis pada layar komputer Anda. Berikut adalah penjelasan tentang cara kerjanya dan apa yang perlu diinstal agar skrip ini dapat dijalankan:
+Skrip Python ini melakukan auto klik pada urutan angka di layar, dengan penanganan khusus untuk angka 3 dan 6 yang dicari menggunakan pencocokan gambar. Skrip ini juga memiliki fitur timer untuk melakukan klik pada koordinat tambahan setiap 10 menit.
 
-## Cara Kerja Skrip
+## Prasyarat
 
-1.  **Mengimpor Library:**
+Sebelum menjalankan skrip ini, Anda perlu menginstal beberapa perangkat lunak dan library Python:
 
+1.  **Python 3:** Pastikan Anda telah menginstal Python 3 di sistem Anda. Anda dapat mengunduhnya dari situs web resmi Python: [https://www.python.org/downloads/](https://www.python.org/downloads/)
+
+2.  **Tesseract OCR:** Skrip ini menggunakan Tesseract Optical Character Recognition (OCR) untuk mencari teks pada gambar (meskipun dalam skrip ini lebih fokus pada pencarian gambar). Anda perlu menginstal Tesseract OCR dan memastikan path-nya dikonfigurasi dengan benar dalam skrip.
+
+    * **Windows:**
+        * Unduh installer dari [https://github.com/UB-Mannheim/tesseract/wiki](https://github.com/UB-Mannheim/tesseract/wiki). Pilih versi yang sesuai dengan sistem Anda (misalnya, `tesseract-ocr-w64-setup-5.x.xxxx.exe`).
+        * Setelah instalasi, cari direktori instalasi Tesseract (biasanya di `C:\Program Files\Tesseract-OCR\`). Anda akan membutuhkan path ini untuk konfigurasi skrip.
+
+    * **macOS:**
+        * Anda dapat menginstal Tesseract menggunakan Homebrew. Jika Anda belum menginstal Homebrew, ikuti instruksi di [https://brew.sh/](https://brew.sh/).
+        * Buka Terminal dan jalankan perintah:
+            ```bash
+            brew install tesseract
+            ```
+
+    * **Linux (Debian/Ubuntu):**
+        * Buka Terminal dan jalankan perintah:
+            ```bash
+            sudo apt update
+            sudo apt install tesseract-ocr
+            ```
+        * Untuk distribusi lain, gunakan manajer paket yang sesuai (misalnya, `yum` pada CentOS/Fedora).
+
+3.  **Library Python:** Anda perlu menginstal library `pyautogui` dan `pytesseract`. Buka Command Prompt (Windows) atau Terminal (macOS/Linux) dan jalankan perintah:
+    ```bash
+    pip install pyautogui pytesseract Pillow
+    ```
     * `pyautogui`: Digunakan untuk mengontrol mouse dan keyboard.
-
-    * `time`: Digunakan untuk mengatur waktu tunggu (delay).
-
-    * `math`: Digunakan untuk perhitungan matematika (dalam kasus ini, menghitung jarak).
-
-    * `re`: Digunakan untuk Regular Expression (pencarian teks).
-
-    * `pytesseract`: Library OCR (Optical Character Recognition) untuk membaca teks dari gambar.
-
-2.  **Konfigurasi Tesseract:**
-
-    * Skrip mencoba mengkonfigurasi path ke Tesseract OCR. Tesseract adalah program yang digunakan untuk mengenali teks dalam gambar. Path ini mungkin berbeda tergantung pada sistem operasi dan bagaimana Tesseract diinstal.
-
-    * Jika Tesseract tidak ditemukan, skrip akan menampilkan pesan error dan berhenti.
-
-3.  **Fungsi `cari_gambar(nama_file, confidence=0.8)`:**
-
-    * Fungsi ini mencari gambar tertentu di layar.
-
-    * `nama_file` adalah nama file gambar yang ingin dicari.
-
-    * `confidence` adalah tingkat kepercayaan (antara 0 dan 1) yang dibutuhkan agar pencarian dianggap berhasil. Nilai yang lebih tinggi berarti pencarian harus lebih akurat.
-
-    * Jika gambar ditemukan, fungsi mengembalikan koordinat tengah gambar. Jika tidak, fungsi mengembalikan `None`.
-
-4.  **Fungsi `hitung_jarak(p1, p2)`:**
-
-    * Fungsi ini menghitung jarak antara dua titik di layar menggunakan rumus Euclidean.
-
-5.  **Fungsi `auto_klik_urutan_dengan_delay_spesifik_berulang_dengan_timer_tambahan_screenshot()`:**
-
-    * Ini adalah fungsi utama yang menjalankan logika auto-klik.
-
-    * `koordinat_angka_statis`: Dictionary yang berisi koordinat tetap untuk angka-angka yang akan diklik.
-
-    * `urutan_klik_awal`: List yang menentukan urutan klik angka.
-
-    * `delay_sebelum` dan `delay_sesudah`: Dictionary yang menentukan delay sebelum dan sesudah setiap klik.
-
-    * `default_delay`: Delay default jika tidak ada delay spesifik yang ditentukan.
-
-    * `timer_interval`: Interval waktu (dalam detik) untuk melakukan tindakan timer (klik koordinat tambahan).
-
-    * `gagal_3_dalam_urutan` dan `gagal_6_dalam_urutan`: Flags untuk menandai kegagalan pencarian angka 3 dan 6.
-
-    * `siklus_berhasil`: Flag untuk menandai keberhasilan siklus klik.
-
-    * `koordinat_klik_jika_3_tidak_muncul` dan `koordinat_klik_jika_6_tidak_muncul`: Koordinat yang akan diklik jika angka 3 atau 6 tidak ditemukan setelah timeout.
-
-    * `timeout_3` dan `timeout_6`: Waktu timeout (dalam detik) untuk pencarian angka 3 dan 6.
-
-    * `waktu_mulai_pencarian_3`, `waktu_mulai_pencarian_6`, `waktu_penundaan_3_berakhir`, dan `waktu_penundaan_6_berakhir`: Variabel-variabel waktu untuk mengelola timeout dan penundaan.
-
-    * `penundaan_3_sedang_berlangsung` dan `penundaan_6_sedang_berlangsung`: Flags untuk menandai apakah penundaan sedang aktif.
-
-    * `durasi_penundaan`: Durasi penundaan setelah klik koordinat timeout.
-
-    * Skrip melakukan klik pada angka-angka dalam urutan yang ditentukan, dengan delay yang telah diatur.
-
-    * Skrip mencari gambar angka 3 dan 6. Jika tidak ditemukan dalam waktu tertentu, skrip akan mengklik koordinat alternatif dan menunda klik angka-angka lain selama 20 detik.
-
-    * Skrip juga memiliki timer yang setiap 10 menit akan melakukan klik pada koordinat tambahan.
-
-    * Skrip mengambil screenshot untuk membantu debugging.
-
-## Yang Perlu Diinstal
-
-Berikut adalah langkah-langkah dan perangkat lunak yang perlu diinstal agar skrip ini dapat berjalan:
-
-1.  **Python:**
-
-    * Unduh dan instal Python dari <https://www.python.org/downloads/>.
-
-    * Pastikan untuk mencentang opsi "Add Python to PATH" saat instalasi.
-
-2.  **PyAutoGUI:**
-
-    * Buka command prompt atau terminal.
-
-    * Jalankan perintah: `pip install pyautogui`
-
-3.  **PyTesseract dan Tesseract OCR:**
-
-    * **Tesseract OCR:**
-
-        * Unduh dan instal Tesseract OCR dari <https://tesseract-ocr.github.io/tessdoc/Home.html>.
-
-        * Pilih versi yang sesuai dengan sistem operasi Anda.
-
-    * **PyTesseract:**
-
-        * Buka command prompt atau terminal.
-
-        * Jalankan perintah: `pip install pytesseract`
-
-    * **Konfigurasi Tesseract Path:**
-
-        * Setelah menginstal Tesseract OCR, Anda perlu mengatur path ke executable Tesseract di dalam skrip Python.
-
-        * Ubah baris ini dalam skrip:
-
-            ```
-            pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'  # Contoh Windows
-            # Atau contoh macOS/Linux:
-            # pytesseract.pytesseract.tesseract_cmd = '/usr/local/bin/tesseract'
-            ```
-
-        * Ganti path di atas dengan path yang benar ke `tesseract.exe` di sistem Anda.
-
-        * **Penting:** Jika path Tesseract tidak dikonfigurasi dengan benar, skrip tidak akan dapat membaca teks dari gambar.
-
-4.  **File Gambar:**
-
-    * Pastikan file gambar `angka_3.png` dan `angka_6.png` ada di direktori yang sama dengan skrip Python. Skrip mencari file-file ini untuk menemukan angka 3 dan 6 di layar.
-
-## Cara Menjalankan Skrip
-
-1.  Simpan skrip Python sebagai file `.py` (misalnya, `auto_klik.py`).
-
-2.  Pastikan semua dependensi (Python, PyAutoGUI, PyTesseract, Tesseract OCR) sudah terinstal dan Tesseract path sudah dikonfigurasi dengan benar.
-
-3.  Pastikan file gambar yang dibutuhkan ada di direktori yang sama dengan skrip.
-
-4.  Buka command prompt atau terminal, arahkan ke direktori tempat Anda menyimpan skrip, dan jalankan dengan perintah: `python auto_klik.py`
-
-## Catatan Tambahan
-
-* Skrip ini mungkin perlu dimodifikasi agar sesuai dengan resolusi layar dan tata letak spesifik aplikasi yang Anda gunakan. Koordinat klik dan nama file gambar mungkin perlu disesuaikan.
-
-* Gunakan skrip ini dengan hati-hati dan bertanggung jawab. Auto-klik yang berlebihan atau tidak tepat dapat menyebabkan masalah pada aplikasi atau sistem Anda.
-
-* Skrip ini mengambil screenshot. Pastikan Anda memahami implikasinya terhadap privasi dan keamanan data Anda.
+    * `pytesseract`: Sebagai wrapper untuk Tesseract OCR (meskipun dalam skrip ini lebih untuk konfigurasi path).
+    * `Pillow`: Library manipulasi gambar yang dibutuhkan oleh `pyautogui`.
+
+## Instalasi dan Konfigurasi
+
+1.  **Simpan Skrip Python:** Simpan kode Python yang telah diberikan ke dalam sebuah file, misalnya `auto_clicker.py`.
+
+2.  **Siapkan Gambar:** Pastikan Anda memiliki file gambar untuk angka 3 (`angka_3.png`) dan angka 6 (`angka_6.png`) yang akan dicari di layar. Letakkan file-file gambar ini di direktori yang sama dengan skrip `auto_clicker.py`.
+
+3.  **Konfigurasi Path Tesseract (di dalam skrip):** Buka file `auto_clicker.py` dengan editor teks. Cari bagian berikut:
+    ```python
+    # Konfigurasikan path Tesseract (sesuaikan dengan sistem Anda)
+    try:
+        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'   # Contoh Windows
+        # Atau contoh macOS/Linux:
+        # pytesseract.pytesseract.tesseract_cmd = '/usr/local/bin/tesseract'
+        print(f"Path Tesseract yang dikonfigurasi: {pytesseract.pytesseract.tesseract_cmd}")
+    except pytesseract.TesseractNotFoundError as e:
+        print(f"Error: Tesseract tidak ditemukan. Pastikan terinstal dan path dikonfigurasi dengan benar.\n{e}")
+        exit()
+    ```
+    * **Windows:** Ganti `r'C:\Program Files\Tesseract-OCR\tesseract.exe'` dengan path sebenarnya ke file `tesseract.exe` di sistem Anda. Contoh umumnya adalah `C:\Program Files\Tesseract-OCR\tesseract.exe` atau `C:\Program Files (x86)\Tesseract-OCR\tesseract.exe`.
+    * **macOS:** Jika Anda menginstal Tesseract menggunakan Homebrew, path biasanya adalah `/usr/local/bin/tesseract`. Uncomment baris yang sesuai dan sesuaikan jika perlu.
+    * **Linux:** Biasanya, Tesseract akan berada di dalam system PATH, jadi Anda mungkin tidak perlu mengubah baris ini.
+
+## Penggunaan
+
+1.  **Buka Tab Target:** Pastikan tab atau jendela aplikasi yang ingin Anda targetkan untuk auto klik aktif dan terlihat di layar Anda.
+
+2.  **Jalankan Skrip:** Buka Command Prompt (Windows) atau Terminal (macOS/Linux), navigasikan ke direktori tempat Anda menyimpan `auto_clicker.py`, dan jalankan skrip menggunakan perintah:
+    ```bash
+    python auto_clicker.py
+    ```
+
+3.  **Ikuti Instruksi:** Skrip akan mencetak instruksi di konsol. Anda perlu memastikan tab target aktif dan kemudian menekan Enter untuk memulai proses auto klik.
+
+4.  **Proses Auto Klik:**
+    * Skrip akan pertama-tama melakukan klik pada koordinat statis untuk angka 1.
+    * Kemudian, skrip akan berulang kali mencoba mengklik urutan angka 2, 3, 6, 4, dan 5.
+    * Untuk angka 3 dan 6, skrip akan mencari gambar `angka_3.png` dan `angka_6.png` di layar.
+    * Jika angka 3 atau 6 tidak ditemukan dalam waktu tertentu (timeout 2 menit), skrip akan melakukan klik pada koordinat fallback dan menunda klik angka-angka tertentu selama 20 detik.
+    * Setiap 10 menit, skrip akan melakukan klik pada koordinat tambahan (101, 60) dan (1055, 64).
+    * Screenshot akan diambil sebelum dan sesudah pencarian gambar angka 3 dan 6, dan disimpan di direktori yang sama dengan skrip.
+
+5.  **Menghentikan Skrip:** Untuk menghentikan skrip kapan saja, tekan `Ctrl+C` di jendela Command Prompt atau Terminal.
+
+## Catatan Penting
+
+* **Koordinat Statis:** Koordinat untuk angka 1, 2, 4, dan 5 didefinisikan secara statis dalam skrip. Anda mungkin perlu menyesuaikan koordinat ini agar sesuai dengan posisi angka-angka tersebut di layar Anda menggunakan alat seperti `pyautogui.position()` yang dapat Anda gunakan dalam sesi Python interaktif.
+* **Pencocokan Gambar:** Keberhasilan pencarian gambar sangat bergantung pada kualitas gambar `angka_3.png` dan `angka_6.png` serta tampilan di layar Anda. Pastikan gambar akurat dan tidak terhalang. Parameter `confidence` dalam fungsi `cari_gambar` dapat disesuaikan jika diperlukan.
+* **Timeout dan Penundaan:** Nilai timeout (untuk pencarian angka 3 dan 6) dan durasi penundaan (setelah kegagalan) dapat disesuaikan dalam skrip sesuai kebutuhan Anda.
+* **Timer:** Interval timer (saat ini 10 menit) juga dapat diubah sesuai kebutuhan.
+* **Path Tesseract:** Pastikan path Tesseract dikonfigurasi dengan benar agar tidak terjadi error. Meskipun skrip ini tidak secara intensif menggunakan OCR, library `pytesseract` mungkin membutuhkannya untuk inisialisasi.
+
+Pastikan Anda memahami cara kerja skrip dan risiko yang mungkin timbul sebelum menjalankannya. Gunakan dengan hati-hati dan bertanggung jawab.
